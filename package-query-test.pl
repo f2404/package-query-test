@@ -80,6 +80,16 @@ push @tests, {
     INFO =>     'Config file path option (invalid path)',
 };
 push @tests, {
+    COMMAND =>  '-Ss perl --nocolor',
+    PATTERN =>  $perl_info_pattern,
+    INFO =>     'Search in official repositories',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --nocolor',
+    PATTERN =>  'aur/package-query (\d+\.?)+\-\d+ \(\d+\)',
+    INFO =>     'Search in AUR',
+};
+push @tests, {
     COMMAND =>  '-Qn -q',
     PATTERN =>  '^$',
     INFO =>     'Quiet (no output)',
@@ -91,7 +101,7 @@ push @tests, {
 };
 
 # number of tests to run
-use Test::Simple tests => 15;
+use Test::Simple tests => 17;
 
 for (@tests) {
     ok( qx($pquery $_->{COMMAND}) =~ /$_->{PATTERN}/, $_->{INFO} );
