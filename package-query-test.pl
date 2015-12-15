@@ -4,6 +4,11 @@ use strict;
 use warnings;
 
 my $pquery = './src/package-query';
+if ($ARGV[0] && ($ARGV[0] eq "-h" || $ARGV[0] eq "--help")) {
+    die "Usage: $0 [path to package-query]\n";
+} elsif ($ARGV[0]) {
+    $pquery = $ARGV[0];
+}
 die "Unable to run $pquery\n" if (! -f $pquery || ! -x $pquery);
 
 my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
@@ -85,7 +90,7 @@ push @tests, {
     INFO =>     'Search in official repositories',
 };
 push @tests, {
-    COMMAND =>  '-As package-query --nocolor',
+    COMMAND =>  '-SAs package-query --nocolor',
     PATTERN =>  'aur/package-query (\d+\.?)+\-\d+ \(\d+\)',
     INFO =>     'Search in AUR',
 };
@@ -103,6 +108,7 @@ push @tests, {
 # number of tests to run
 use Test::Simple tests => 17;
 
+print "Running tests for $pquery ...\n";
 for (@tests) {
     ok( qx($pquery $_->{COMMAND}) =~ /$_->{PATTERN}/, $_->{INFO} );
 }
