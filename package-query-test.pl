@@ -135,5 +135,6 @@ use Test::Simple tests => 22;
 
 print "Running tests for $pquery ...\n";
 for (@tests) {
-    ok( qx($pquery $_->{COMMAND}) =~ /$_->{PATTERN}/, $_->{INFO} );
+    my $res = ok( qx($pquery $_->{COMMAND}) =~ /$_->{PATTERN}/, $_->{INFO} );
+    print "#   command: $pquery $_->{COMMAND}\n" if (!$res);
 }
