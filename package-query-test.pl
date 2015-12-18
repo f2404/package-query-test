@@ -14,6 +14,8 @@ die "Unable to run $pquery\n" if (! -f $pquery || ! -x $pquery);
 my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
 my $perl_info_pattern = 'core\/perl (\d+\.?)+\-\d+ \(base\)';
 my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
+my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])? \(\d+\)';
+my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\-\d+( \[installed: \S+\])? \(\d+\)';
 my $dummy_path = '/dummy/path';
 
 my @tests;
@@ -132,8 +134,48 @@ push @tests, {
 };
 push @tests, {
     COMMAND =>  '-SAs package-query',
-    PATTERN =>  'aur/package-query (\d+\.?)+\-\d+ \(\d+\)',
+    PATTERN =>  $package_query_pattern,
     INFO =>     'Search in AUR',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --sort name',
+    PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - sort by name',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --rsort name',
+    PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - reverse sort by name',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --sort date',
+    PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - sort by date',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --rsort date',
+    PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - reverse sort by date',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --sort size',
+    PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - sort by size',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --rsort size',
+    PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - reverse sort by size',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --sort vote',
+    PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - sort by vote',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --rsort vote',
+    PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+    INFO =>     'Search in AUR - reverse sort by vote',
 };
 push @tests, {
     COMMAND =>  '-Qn -q',
@@ -147,7 +189,7 @@ push @tests, {
 };
 
 # number of tests to run
-use Test::Simple tests => 25;
+use Test::Simple tests => 33;
 
 print "Running tests for $pquery ...\n";
 for (@tests) {
