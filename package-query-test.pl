@@ -14,6 +14,7 @@ die "Unable to run $pquery\n" if (! -f $pquery || ! -x $pquery);
 my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
 my $perl_info_pattern = 'core\/perl (\d+\.?)+\-\d+ \(base\)';
 my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
+my $local_package_query_pattern = 'local\/package-query(-git)? (\d+\.?)+';
 my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])? \(\d+\)';
 my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\-\d+( \[installed: \S+\])? \(\d+\)';
 my $dummy_path = '/dummy/path';
@@ -74,7 +75,7 @@ push @tests, {
 };
 push @tests, {
     COMMAND =>  '-Qm',
-    PATTERN =>  'local\/package-query-git (\d+\.?)+',
+    PATTERN =>  $local_package_query_pattern,
     INFO =>     'Query foreign packages',
 };
 push @tests, {
@@ -111,6 +112,16 @@ push @tests, {
     COMMAND =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
     PATTERN =>  $alpm_failed_pattern,
     INFO =>     'Root path option (invalid path)',
+};
+push @tests, {
+    COMMAND =>  '-Q pacman --qdepends',
+    PATTERN =>  $local_package_query_pattern,
+    INFO =>     'Query packages depending on target',
+};
+push @tests, {
+    COMMAND =>  '-Q package-query --qprovides',
+    PATTERN =>  $local_package_query_pattern,
+    INFO =>     'Query packages providing target',
 };
 push @tests, {
     COMMAND =>  '-Ss perl',
@@ -189,7 +200,7 @@ push @tests, {
 };
 
 # number of tests to run
-use Test::Simple tests => 33;
+use Test::Simple tests => 35;
 
 print "Running tests for $pquery ...\n";
 for (@tests) {
