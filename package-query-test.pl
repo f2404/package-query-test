@@ -13,6 +13,7 @@ die "Unable to run $pquery\n" if (! -f $pquery || ! -x $pquery);
 
 my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
 my $perl_info_pattern = 'core\/perl (\d+\.?)+\-\d+ \(base\)';
+my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
 my $dummy_path = '/dummy/path';
 
 my @tests;
@@ -86,7 +87,7 @@ push @tests, {
 };
 push @tests, {
     COMMAND =>  "-Qn -b $dummy_path 2>&1 > /dev/null",
-    PATTERN =>  'failed to initialize alpm library \(could not find or read directory\)',
+    PATTERN =>  $alpm_failed_pattern,
     INFO =>     'Database path option (invalid path)',
 };
 push @tests, {
@@ -100,9 +101,24 @@ push @tests, {
     INFO =>     'Config file path option (invalid path)',
 };
 push @tests, {
+    COMMAND =>  '-Qn -r /',
+    PATTERN =>  $perl_info_pattern,
+    INFO =>     'Root path option (valid path)',
+};
+push @tests, {
+    COMMAND =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
+    PATTERN =>  $alpm_failed_pattern,
+    INFO =>     'Root path option (invalid path)',
+};
+push @tests, {
     COMMAND =>  '-Ss perl',
     PATTERN =>  $perl_info_pattern.' \[installed\]',
     INFO =>     'Search in official repositories',
+};
+push @tests, {
+    COMMAND =>  '-Ss ^p\[e\]rl$',
+    PATTERN =>  $perl_info_pattern.' \[installed\]',
+    INFO =>     'Search in official repositories using regexp',
 };
 push @tests, {
     COMMAND =>  '-Si perl',
@@ -131,7 +147,7 @@ push @tests, {
 };
 
 # number of tests to run
-use Test::Simple tests => 22;
+use Test::Simple tests => 25;
 
 print "Running tests for $pquery ...\n";
 for (@tests) {
