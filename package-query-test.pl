@@ -144,9 +144,14 @@ push @tests, {
     INFO =>     'Search - show package size',
 };
 push @tests, {
-    COMMAND =>  '-SAs package-query',
+    COMMAND =>  '-As package-query',
     PATTERN =>  $package_query_pattern,
     INFO =>     'Search in AUR',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --insecure',
+    PATTERN =>  $package_query_pattern,
+    INFO =>     'Search in AUR (insecure connection)',
 };
 push @tests, {
     COMMAND =>  '-As package-query --sort name',
@@ -189,6 +194,16 @@ push @tests, {
     INFO =>     'Search in AUR - reverse sort by vote',
 };
 push @tests, {
+    COMMAND =>  '-As package-query --aur-url https://aur.archlinux.org',
+    PATTERN =>  $package_query_pattern,
+    INFO =>     'AUR URL option (valid)',
+};
+push @tests, {
+    COMMAND =>  '-As package-query --aur-url https://dummy 2>&1 > /dev/null',
+    PATTERN =>  'curl error: Couldn\'t resolve host name',
+    INFO =>     'AUR URL option (invalid)',
+};
+push @tests, {
     COMMAND =>  '-Qn -q',
     PATTERN =>  '^$',
     INFO =>     'Quiet (no output)',
@@ -200,7 +215,7 @@ push @tests, {
 };
 
 # number of tests to run
-use Test::Simple tests => 35;
+use Test::Simple tests => 38;
 
 print "Running tests for $pquery ...\n";
 for (@tests) {
