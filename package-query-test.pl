@@ -19,8 +19,11 @@ use Test::Simple tests => 38;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests) {
-    my $res = ok( qx($pquery $test->{COMMAND}) =~ /$test->{PATTERN}/, $test->{INFO} );
-    print "#   command: $pquery $test->{COMMAND}\n" if (!$res);
+    my $out = qx($pquery $test->{COMMAND});
+    my $res = ok( $out =~ /$test->{PATTERN}/, $test->{INFO} );
+    print "#   command:  $pquery $test->{COMMAND}\n" if (!$res);
+    print "#   got:      \"$out\"\n" if (!$res);
+    print "#   expected: \"$test->{PATTERN}\"\n" if (!$res);
 }
 
 # This function intializes the tests list
