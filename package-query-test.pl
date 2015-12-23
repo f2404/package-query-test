@@ -15,7 +15,7 @@ sub init_tests();
 my @tests = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 38;
+use Test::Simple tests => 41;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests) {
@@ -31,9 +31,9 @@ for my $test (@tests) {
 # COMMAND - args for package-query, PATTERN - result to check against, INFO - info on test
 sub init_tests() {
     my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
-    my $perl_info_pattern = 'core\/perl (\d+\.?)+\-\d+ \(base\)';
+    my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
     my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
-    my $local_package_query_pattern = 'local\/package-query(-git)? (\d+\.?)+';
+    my $local_package_query_pattern = 'local/package-query(-git)? (\d+\.?)+';
     my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])? \(\d+\)';
     my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\-\d+( \[installed: \S+\])? \(\d+\)';
     my $dummy_path = '/dummy/path';
@@ -81,7 +81,7 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  '-Q --show-size perl',
-        PATTERN =>  'core\/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\)',
+        PATTERN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\)',
         INFO =>     'Query - show package size',
     };
     push @tests, {
@@ -132,12 +132,27 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Q pacman --qdepends',
         PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query packages depending on target',
+        INFO =>     'Query packages depending on the target',
     };
     push @tests, {
         COMMAND =>  '-Q package-query --qprovides',
         PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query packages providing target',
+        INFO =>     'Query packages providing the target',
+    };
+    push @tests, {
+        COMMAND =>  '-Q perl --qrequires',
+        PATTERN =>  'core/db (\d+\.?)+\-\d+',
+        INFO =>     'Query packages requiring the target',
+    };
+    push @tests, {
+        COMMAND =>  '-S kernel26-lts --qconflicts',
+        PATTERN =>  'core/linux-lts (\d+\.?)+\-\d+',
+        INFO =>     'Query packages conflicting with the target',
+    };
+    push @tests, {
+        COMMAND =>  '-S kernel26-lts --qreplaces',
+        PATTERN =>  'core/linux-lts (\d+\.?)+\-\d+',
+        INFO =>     'Query packages replacing the target',
     };
     push @tests, {
         COMMAND =>  '-Ss perl',
@@ -156,7 +171,7 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  '-S --show-size perl',
-        PATTERN =>  'core\/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\) \[installed\]',
+        PATTERN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\) \[installed\]',
         INFO =>     'Search - show package size',
     };
     push @tests, {
