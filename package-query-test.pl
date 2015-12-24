@@ -15,7 +15,7 @@ sub init_tests();
 my @tests = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 41;
+use Test::Simple tests => 43;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests) {
@@ -29,6 +29,7 @@ for my $test (@tests) {
 # This function intializes the tests list
 # Test entry structure:
 # COMMAND - args for package-query, PATTERN - result to check against, INFO - info on test
+## TODO -Qt (unrequired), -Qu (upgrades)
 sub init_tests() {
     my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
@@ -93,6 +94,16 @@ sub init_tests() {
         COMMAND =>  '-Qm',
         PATTERN =>  $local_package_query_pattern,
         INFO =>     'Query foreign packages',
+    };
+    push @tests, {
+        COMMAND =>  '-Qe',
+        PATTERN =>  $perl_info_pattern,
+        INFO =>     'Query explicitly installed packages',
+    };
+    push @tests, {
+        COMMAND =>  '-Qd',
+        PATTERN =>  $local_package_query_pattern,
+        INFO =>     'Query packages installed as dependencies',
     };
     push @tests, {
         COMMAND =>  '-Qp /var/cache/pacman/pkg/perl-*',
