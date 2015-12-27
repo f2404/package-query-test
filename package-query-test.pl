@@ -15,7 +15,7 @@ sub init_tests();
 my @tests = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 44;
+use Test::Simple tests => 45;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests) {
@@ -29,7 +29,7 @@ for my $test (@tests) {
 # This function intializes the tests list
 # Test entry structure:
 # COMMAND - args for package-query, PATTERN - result to check against, INFO - info on test
-## TODO -Qu (upgrades)
+## TODO Better test for -Qu (upgrades)?
 sub init_tests() {
     my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
@@ -37,7 +37,9 @@ sub init_tests() {
     my $local_package_query_pattern = 'local/package-query(-git)? (\d+\.?)+';
     my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])? \(\d+\)';
     my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\-\d+( \[installed: \S+\])? \(\d+\)';
+    my $linux_lts_pattern = 'core/linux-lts (\d+\.?)+\-\d+';
     my $dummy_path = '/dummy/path';
+    my $empty = '^$';
     my @tests;
 
     push @tests, {
@@ -72,7 +74,7 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  "-Qn -c $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  "Unable to open file: $dummy_path",
+        PATTERN =>  'Unable to open file: '.$dummy_path,
         INFO =>     'Config file path option (invalid path)',
     };
     push @tests, {
@@ -141,6 +143,11 @@ sub init_tests() {
         INFO =>     'Query packages that are no more required',
     };
     push @tests, {
+        COMMAND =>  '-Qu',
+        PATTERN =>  $empty,
+        INFO =>     'Query packages upgrades',
+    };
+    push @tests, {
         COMMAND =>  '-Qp /var/cache/pacman/pkg/perl-*',
         PATTERN =>  $perl_info_pattern,
         INFO =>     'Query package as file',
@@ -162,12 +169,12 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  '-S kernel26-lts --qconflicts',
-        PATTERN =>  'core/linux-lts (\d+\.?)+\-\d+',
+        PATTERN =>  $linux_lts_pattern,
         INFO =>     'Query packages conflicting with the target',
     };
     push @tests, {
         COMMAND =>  '-S kernel26-lts --qreplaces',
-        PATTERN =>  'core/linux-lts (\d+\.?)+\-\d+',
+        PATTERN =>  $linux_lts_pattern,
         INFO =>     'Query packages replacing the target',
     };
     push @tests, {
@@ -252,12 +259,12 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  '-Qn -q',
-        PATTERN =>  '^$',
+        PATTERN =>  $empty,
         INFO =>     'Quiet (no output)',
     };
     push @tests, {
         COMMAND =>  '-j 2>&1 > /dev/null',
-        PATTERN =>  "$pquery: invalid option \-\- \'j\'",
+        PATTERN =>  $pquery.': invalid option -- \'j\'',
         INFO =>     'Invalid option (-j)',
     };
 
