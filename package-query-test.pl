@@ -31,6 +31,7 @@ for my $test (@tests) {
 # This function intializes the tests list
 # Test entry structure:
 # COMMAND - args for package-query, PATTERN - result to check against, INFO - info on test
+# EXCLUDE (optional) - pattern that the output should not include
 ## TODO Better test for -Qu (upgrades)?
 sub init_tests() {
     my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
