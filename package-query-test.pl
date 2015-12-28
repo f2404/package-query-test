@@ -15,12 +15,14 @@ sub init_tests();
 my @tests = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 45;
+use Test::Simple tests => 46;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests) {
     my $out = qx($pquery $test->{COMMAND});
-    my $res = ok( $out =~ /$test->{PATTERN}/, $test->{INFO} );
+    my $res = ($out =~ /$test->{PATTERN}/);
+    $res &= ($out !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
+    ok( $res, $test->{INFO} );
     print "#   command:  $pquery $test->{COMMAND}\n" if (!$res);
     print "#   got:      \"$out\"\n" if (!$res);
     print "#   expected: \"$test->{PATTERN}\"\n" if (!$res);
@@ -181,6 +183,12 @@ sub init_tests() {
         COMMAND =>  '-Ss perl',
         PATTERN =>  $perl_info_pattern.' \[installed\]',
         INFO =>     'Search in official repositories',
+    };
+    push @tests, {
+        COMMAND =>  '-Ss perl --nameonly',
+        PATTERN =>  $perl_info_pattern.' \[installed\]',
+        EXCLUDE =>  'core/pcre (\d+\.?)+\-\d+',
+        INFO =>     'Search in official repositories - nameonly option',
     };
     push @tests, {
         COMMAND =>  '-Ss ^p\[e\]rl$',
