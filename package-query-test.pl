@@ -15,7 +15,7 @@ sub init_tests();
 my @tests = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 46;
+use Test::Simple tests => 47;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests) {
@@ -114,6 +114,11 @@ sub init_tests() {
         COMMAND =>  '-Qi perl',
         PATTERN =>  $perl_info_pattern,
         INFO =>     'Query - package info',
+    };
+    push @tests, {
+        COMMAND =>  '-1Qi perl',
+        PATTERN =>  $perl_info_pattern,
+        INFO =>     'Query - package info with -1 option',
     };
     push @tests, {
         COMMAND =>  '-Q --show-size perl',
