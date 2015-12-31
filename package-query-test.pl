@@ -5,7 +5,7 @@ use warnings;
 
 my $pquery = './src/package-query';
 if ($ARGV[0] && ($ARGV[0] eq "-h" || $ARGV[0] eq "--help")) {
-    die "Usage: $0 [path to package-query]\n";
+    die "Usage: $0 [path to package-query]\n   or: prove $0 [path to package-query]\n";
 } elsif ($ARGV[0]) {
     $pquery = $ARGV[0];
 }
