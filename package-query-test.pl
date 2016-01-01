@@ -12,13 +12,13 @@ if ($ARGV[0] && ($ARGV[0] eq "-h" || $ARGV[0] eq "--help")) {
 die "Unable to run $pquery\n" if (! -f $pquery || ! -x $pquery);
 
 sub init_tests();
-my @tests = init_tests();
+my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 47;
+use Test::Simple tests => 50;
 
 print "Running tests for $pquery ...\n";
-for my $test (@tests) {
+for my $test (@tests_list) {
     my $out = qx($pquery $test->{COMMAND});
     my $res = ($out =~ /$test->{PATTERN}/);
     $res &= ($out !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
@@ -34,7 +34,6 @@ for my $test (@tests) {
 # EXCLUDE (optional) - pattern that the output should not include
 ## TODO Better test for -Qu (upgrades)?
 sub init_tests() {
-    my $usage_pattern = 'Usage: package-query \[options\] \[targets \.\.\.\]';
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
     my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
     my $local_package_query_pattern = 'local/package-query(-git)? (\d+\.?)+';
@@ -47,18 +46,23 @@ sub init_tests() {
 
     push @tests, {
         COMMAND =>  '-h 2>&1 > /dev/null',
-        PATTERN =>  $usage_pattern,
+        PATTERN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
         INFO =>     'Help info (-h)',
     };
     push @tests, {
         COMMAND =>  '--help 2>&1 > /dev/null',
-        PATTERN =>  $usage_pattern,
+        PATTERN =>  $tests[-1]->{PATTERN},
         INFO =>     'Help info (--help)',
     };
     push @tests, {
         COMMAND =>  '-v',
         PATTERN =>  'package-query (\d+\.?)+',
-        INFO =>     'Version info',
+        INFO =>     'Version info (-v)',
+    };
+    push @tests, {
+        COMMAND =>  '--version',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Version info (--version)',
     };
     push @tests, {
         COMMAND =>  '-Qn -b /var/lib/pacman',
@@ -93,12 +97,22 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-L',
         PATTERN =>  'core',
-        INFO =>     'Repositories list',
+        INFO =>     'Repositories list (-L)',
+    };
+    push @tests, {
+        COMMAND =>  '--list-repo',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Repositories list (--list-repo)',
     };
     push @tests, {
         COMMAND =>  '-Q',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Empty query',
+        INFO =>     'Empty query (-Q)',
+    };
+    push @tests, {
+        COMMAND =>  '--query',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Empty query (--query)',
     };
     push @tests, {
         COMMAND =>  '-Ql',
@@ -192,18 +206,18 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  '-Ss perl --nameonly',
-        PATTERN =>  $perl_info_pattern.' \[installed\]',
+        PATTERN =>  $tests[-1]->{PATTERN},
         EXCLUDE =>  'core/pcre (\d+\.?)+\-\d+',
         INFO =>     'Search in official repositories - nameonly option',
     };
     push @tests, {
         COMMAND =>  '-Ss ^p\[e\]rl$',
-        PATTERN =>  $perl_info_pattern.' \[installed\]',
+        PATTERN =>  $tests[-1]->{PATTERN},
         INFO =>     'Search in official repositories using regexp',
     };
     push @tests, {
         COMMAND =>  '-Si perl',
-        PATTERN =>  $perl_info_pattern.' \[installed\]',
+        PATTERN =>  $tests[-1]->{PATTERN},
         INFO =>     'Search - package info',
     };
     push @tests, {
