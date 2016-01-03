@@ -15,7 +15,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 50;
+use Test::Simple tests => 55;
 
 print "Running tests for $pquery ...\n";
 for my $test (@tests_list) {
@@ -47,42 +47,62 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-h 2>&1 > /dev/null',
         PATTERN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
-        INFO =>     'Help info (-h)',
+        INFO =>     'Help info -h',
     };
     push @tests, {
         COMMAND =>  '--help 2>&1 > /dev/null',
         PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Help info (--help)',
+        INFO =>     'Help info --help',
     };
     push @tests, {
         COMMAND =>  '-v',
         PATTERN =>  'package-query (\d+\.?)+',
-        INFO =>     'Version info (-v)',
+        INFO =>     'Version info -v',
     };
     push @tests, {
         COMMAND =>  '--version',
         PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Version info (--version)',
+        INFO =>     'Version info --version',
     };
     push @tests, {
         COMMAND =>  '-Qn -b /var/lib/pacman',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Database path option (valid path)',
+        INFO =>     'Database path option -b (valid path)',
+    };
+    push @tests, {
+        COMMAND =>  '-Qn --dbpath /var/lib/pacman',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Database path option --dbpath (valid path)',
     };
     push @tests, {
         COMMAND =>  "-Qn -b $dummy_path 2>&1 > /dev/null",
         PATTERN =>  $alpm_failed_pattern,
-        INFO =>     'Database path option (invalid path)',
+        INFO =>     'Database path option -b (invalid path)',
+    };
+    push @tests, {
+        COMMAND =>  "-Qn -dbpath $dummy_path 2>&1 > /dev/null",
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Database path option --dbpath (invalid path)',
     };
     push @tests, {
         COMMAND =>  '-Qn -c /etc/pacman.conf',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Config file path option (valid path)',
+        INFO =>     'Config file path option -c (valid path)',
+    };
+    push @tests, {
+        COMMAND =>  '-Qn --config /etc/pacman.conf',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Config file path option --config (valid path)',
     };
     push @tests, {
         COMMAND =>  "-Qn -c $dummy_path 2>&1 > /dev/null",
         PATTERN =>  'Unable to open file: '.$dummy_path,
-        INFO =>     'Config file path option (invalid path)',
+        INFO =>     'Config file path option -c (invalid path)',
+    };
+    push @tests, {
+        COMMAND =>  "-Qn --config $dummy_path 2>&1 > /dev/null",
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Config file path option --config (invalid path)',
     };
     push @tests, {
         COMMAND =>  '-Qn -r /',
@@ -288,7 +308,12 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Qn -q',
         PATTERN =>  $empty,
-        INFO =>     'Quiet (no output)',
+        INFO =>     'Quiet -q (no output)',
+    };
+    push @tests, {
+        COMMAND =>  '-Qn --quiet',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Quiet --quiet (no output)',
     };
     push @tests, {
         COMMAND =>  '-j 2>&1 > /dev/null',
