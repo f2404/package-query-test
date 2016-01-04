@@ -15,7 +15,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 55;
+use Test::Simple tests => 57;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -108,32 +108,42 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Qn -r /',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Root path option (valid path)',
+        INFO =>     'Root path option -r (valid path)',
+    };
+    push @tests, {
+        COMMAND =>  '-Qn --root /',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Root path option --root (valid path)',
     };
     push @tests, {
         COMMAND =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
         PATTERN =>  $alpm_failed_pattern,
-        INFO =>     'Root path option (invalid path)',
+        INFO =>     'Root path option -r (invalid path)',
+    };
+    push @tests, {
+        COMMAND =>  "-Qn --root $dummy_path 2>&1 > /dev/null",
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Root path option --root (invalid path)',
     };
     push @tests, {
         COMMAND =>  '-L',
         PATTERN =>  'core',
-        INFO =>     'Repositories list (-L)',
+        INFO =>     'Repositories list -L',
     };
     push @tests, {
         COMMAND =>  '--list-repo',
         PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Repositories list (--list-repo)',
+        INFO =>     'Repositories list --list-repo',
     };
     push @tests, {
         COMMAND =>  '-Q',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Empty query (-Q)',
+        INFO =>     'Empty query -Q',
     };
     push @tests, {
         COMMAND =>  '--query',
         PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Empty query (--query)',
+        INFO =>     'Empty query --query',
     };
     push @tests, {
         COMMAND =>  '-Ql',
