@@ -15,7 +15,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 57;
+use Test::Simple tests => 60;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -158,12 +158,22 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Qi perl',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query - package info',
+        INFO =>     'Query - package info -i',
+    };
+    push @tests, {
+        COMMAND =>  '-Q perl --info',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query - package info --info',
     };
     push @tests, {
         COMMAND =>  '-1Qi perl',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query - package info with -1 option',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query - package info -i -1',
+    };
+    push @tests, {
+        COMMAND =>  '-Qi perl --just-one',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query - package info -i --just-one',
     };
     push @tests, {
         COMMAND =>  '-Q --show-size perl',
@@ -198,7 +208,12 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Qu',
         PATTERN =>  $empty,
-        INFO =>     'Query packages upgrades',
+        INFO =>     'Query packages upgrades -u',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --upgrades',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query packages upgrades --upgrades',
     };
     push @tests, {
         COMMAND =>  '-Qp /var/cache/pacman/pkg/perl-*',
