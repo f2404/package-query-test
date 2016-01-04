@@ -17,9 +17,10 @@ my @tests_list = init_tests();
 # number of tests to run
 use Test::Simple tests => 55;
 
+my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
 for my $test (@tests_list) {
-    my $out = qx($pquery $test->{COMMAND});
+    my $out = qx($locale $pquery $test->{COMMAND});
     my $res = ($out =~ /$test->{PATTERN}/);
     $res &= ($out !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
     ok( $res, $test->{INFO} );
