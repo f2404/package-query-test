@@ -15,7 +15,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 60;
+use Test::Simple tests => 62;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -23,10 +23,24 @@ for my $test (@tests_list) {
     my $out = qx($locale $pquery $test->{COMMAND});
     my $res = ($out =~ /$test->{PATTERN}/);
     $res &= ($out !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
+
+    my ($long, $outl, $resl) = ("", "", 1);
+    if (defined $test->{LONG}) {
+        $long = $test->{COMMAND};
+        $long =~ s/$test->{LONG}[0]/$test->{LONG}[1]/;
+        $outl = qx($locale $pquery $long);
+        $resl = ($outl =~ /$test->{PATTERN}/);
+        $resl &= ($outl !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
+        $res &= $resl;
+    }
+
     ok( $res, $test->{INFO} );
     print "#   command:  $pquery $test->{COMMAND}\n" if (!$res);
     print "#   got:      \"$out\"\n" if (!$res);
     print "#   expected: \"$test->{PATTERN}\"\n" if (!$res);
+    print "#   command:  $pquery $long\n" if (!$resl);
+    print "#   got:      \"$outl\"\n" if (!$resl);
+    print "#   expected: \"$test->{PATTERN}\"\n" if (!$resl);
 }
 
 # This function intializes the tests list
@@ -45,10 +59,12 @@ sub init_tests() {
     my $empty = '^$';
     my @tests;
 
+    my @long = ('-h', '--help');
     push @tests, {
         COMMAND =>  '-h 2>&1 > /dev/null',
         PATTERN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
         INFO =>     'Help info -h',
+        LONG =>     \@long,
     };
     push @tests, {
         COMMAND =>  '--help 2>&1 > /dev/null',
@@ -248,7 +264,12 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Ss perl',
         PATTERN =>  $perl_info_pattern.' \[installed\]',
-        INFO =>     'Search in official repositories',
+        INFO =>     'Search in official repositories -S',
+    };
+    push @tests, {
+        COMMAND =>  '-s perl --sync',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Search in official repositories --sync',
     };
     push @tests, {
         COMMAND =>  '-Ss perl --nameonly',
@@ -274,11 +295,16 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-As package-query',
         PATTERN =>  $package_query_pattern,
-        INFO =>     'Search in AUR',
+        INFO =>     'Search in AUR -A',
+    };
+    push @tests, {
+        COMMAND =>  '-s package-query --aur',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Search in AUR --aur',
     };
     push @tests, {
         COMMAND =>  '-As package-query --insecure',
-        PATTERN =>  $package_query_pattern,
+        PATTERN =>  $tests[-1]->{PATTERN},
         INFO =>     'Search in AUR (insecure connection)',
     };
     push @tests, {
