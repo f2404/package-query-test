@@ -15,7 +15,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 64;
+use Test::Simple tests => 69;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -204,27 +204,52 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-Qn',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query native packages',
+        INFO =>     'Query native packages -n',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --native',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query native packages --native',
     };
     push @tests, {
         COMMAND =>  '-Qm',
         PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query foreign packages',
+        INFO =>     'Query foreign packages -m',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --foreign',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query foreign packages --foreign',
     };
     push @tests, {
         COMMAND =>  '-Qe',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query explicitly installed packages',
+        INFO =>     'Query explicitly installed packages -e',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --explicit',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query explicitly installed packages --explicit',
     };
     push @tests, {
         COMMAND =>  '-Qd',
         PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query packages installed as dependencies',
+        INFO =>     'Query packages installed as dependencies -d',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --deps',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query packages installed as dependencies --deps',
     };
     push @tests, {
         COMMAND =>  '-Qt',
         PATTERN =>  'local/yaourt(-git)? (\d+\.?)+',
-        INFO =>     'Query packages that are no more required',
+        INFO =>     'Query packages that are no more required -t',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --unrequired',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Query packages that are no more required --unrequired',
     };
     push @tests, {
         COMMAND =>  '-Qu',
