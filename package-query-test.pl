@@ -15,7 +15,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 62;
+use Test::Simple tests => 64;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -163,8 +163,13 @@ sub init_tests() {
     };
     push @tests, {
         COMMAND =>  '-Ql',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'List local repositories contents (same as empty query)',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'List local repositories contents (same as empty query) -l',
+    };
+    push @tests, {
+        COMMAND =>  '-Q --list',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'List local repositories contents (same as empty query) --list',
     };
     push @tests, {
         COMMAND =>  '-Qs perl',
@@ -270,6 +275,11 @@ sub init_tests() {
         COMMAND =>  '-s perl --sync',
         PATTERN =>  $tests[-1]->{PATTERN},
         INFO =>     'Search in official repositories --sync',
+    };
+    push @tests, {
+        COMMAND =>  '-S perl --search',
+        PATTERN =>  $tests[-1]->{PATTERN},
+        INFO =>     'Search in official repositories --search',
     };
     push @tests, {
         COMMAND =>  '-Ss perl --nameonly',
