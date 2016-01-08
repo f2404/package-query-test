@@ -11,11 +11,12 @@ if ($ARGV[0] && ($ARGV[0] eq "-h" || $ARGV[0] eq "--help")) {
 }
 die "Unable to run $pquery\n" if (! -f $pquery || ! -x $pquery);
 
+sub print_fail($$$$);
 sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 69;
+use Test::Simple tests => 61;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -26,21 +27,25 @@ for my $test (@tests_list) {
 
     my ($long, $outl, $resl) = ("", "", 1);
     if (defined $test->{LONG}) {
-        $long = $test->{COMMAND};
-        $long =~ s/$test->{LONG}[0]/$test->{LONG}[1]/;
+        ($long = $test->{COMMAND}) =~ s/$test->{LONG}[0]/$test->{LONG}[1]/;
         $outl = qx($locale $pquery $long);
         $resl = ($outl =~ /$test->{PATTERN}/);
         $resl &= ($outl !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
         $res &= $resl;
     }
 
-    ok( $res, $test->{INFO} );
-    print "#   command:  $pquery $test->{COMMAND}\n" if (!$res);
-    print "#   got:      \"$out\"\n" if (!$res);
-    print "#   expected: \"$test->{PATTERN}\"\n" if (!$res);
-    print "#   command:  $pquery $long\n" if (!$resl);
-    print "#   got:      \"$outl\"\n" if (!$resl);
-    print "#   expected: \"$test->{PATTERN}\"\n" if (!$resl);
+    ok($res, $test->{INFO});
+    print_fail($pquery, $test->{COMMAND}, $out, $test->{PATTERN}) if !$res;
+    print "#\n" if (!$resl);
+    print_fail($pquery, $long, $outl, $test->{PATTERN}) if !$resl;
+}
+
+# This function prints failed test info
+sub print_fail($$$$) {
+    my ($pquery, $command, $out, $pattern) = @_;
+    print "#   command:  $pquery $command\n";
+    print "#   got:      \"$out\"\n";
+    print "#   expected: \"\/$pattern\/\"\n";
 }
 
 # This function intializes the tests list
@@ -59,87 +64,53 @@ sub init_tests() {
     my $empty = '^$';
     my @tests;
 
-    my @long = ('-h', '--help');
     push @tests, {
         COMMAND =>  '-h 2>&1 > /dev/null',
         PATTERN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
-        INFO =>     'Help info -h',
-        LONG =>     \@long,
-    };
-    push @tests, {
-        COMMAND =>  '--help 2>&1 > /dev/null',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Help info --help',
+        INFO =>     'Help info',
+        LONG =>     [ ('-h', '--help') ],
     };
     push @tests, {
         COMMAND =>  '-v',
         PATTERN =>  'package-query (\d+\.?)+',
-        INFO =>     'Version info -v',
-    };
-    push @tests, {
-        COMMAND =>  '--version',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Version info --version',
+        INFO =>     'Version info',
+        LONG =>     [ ('-v', '--version') ],
     };
     push @tests, {
         COMMAND =>  '-Qn -b /var/lib/pacman',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Database path option -b (valid path)',
-    };
-    push @tests, {
-        COMMAND =>  '-Qn --dbpath /var/lib/pacman',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Database path option --dbpath (valid path)',
+        INFO =>     'Database path option (valid path)',
+        LONG =>     [ ('-b', '--dbpath') ],
     };
     push @tests, {
         COMMAND =>  "-Qn -b $dummy_path 2>&1 > /dev/null",
         PATTERN =>  $alpm_failed_pattern,
-        INFO =>     'Database path option -b (invalid path)',
-    };
-    push @tests, {
-        COMMAND =>  "-Qn -dbpath $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Database path option --dbpath (invalid path)',
+        INFO =>     'Database path option (invalid path)',
+        LONG =>     [ ('-b', '--dbpath') ],
     };
     push @tests, {
         COMMAND =>  '-Qn -c /etc/pacman.conf',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Config file path option -c (valid path)',
-    };
-    push @tests, {
-        COMMAND =>  '-Qn --config /etc/pacman.conf',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Config file path option --config (valid path)',
+        INFO =>     'Config file path option (valid path)',
+        LONG =>     [ ('-c', '--config') ],
     };
     push @tests, {
         COMMAND =>  "-Qn -c $dummy_path 2>&1 > /dev/null",
         PATTERN =>  'Unable to open file: '.$dummy_path,
-        INFO =>     'Config file path option -c (invalid path)',
-    };
-    push @tests, {
-        COMMAND =>  "-Qn --config $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Config file path option --config (invalid path)',
+        INFO =>     'Config file path option (invalid path)',
+        LONG =>     [ ('-c', '--config') ],
     };
     push @tests, {
         COMMAND =>  '-Qn -r /',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Root path option -r (valid path)',
-    };
-    push @tests, {
-        COMMAND =>  '-Qn --root /',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Root path option --root (valid path)',
+        INFO =>     'Root path option (valid path)',
+        LONG =>     [ ('-r', '--root') ],
     };
     push @tests, {
         COMMAND =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
         PATTERN =>  $alpm_failed_pattern,
-        INFO =>     'Root path option -r (invalid path)',
-    };
-    push @tests, {
-        COMMAND =>  "-Qn --root $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Root path option --root (invalid path)',
+        INFO =>     'Root path option (invalid path)',
+        LONG =>     [ ('-r', '--root') ],
     };
     push @tests, {
         COMMAND =>  '-L',
