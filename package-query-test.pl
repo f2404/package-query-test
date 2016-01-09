@@ -25,10 +25,10 @@ for my $test (@tests_list) {
     my $res = ($out =~ /$test->{PTRN}/);
     $res &= ($out !~ /$test->{EXCL}/) if (defined $test->{EXCL});
 
-    my ($long, $outl, $resl) = ("", "", 1);
-    if (defined $test->{LONG}) {
-        ($long = $test->{ARGS}) =~ s/$test->{LONG}[0]/$test->{LONG}[1]/;
-        $outl = qx($locale $pquery $long);
+    my ($argl, $outl, $resl) = ("", "", 1);
+    if (defined $test->{OPTS}) {
+        ($argl = $test->{ARGS}) =~ s/$test->{OPTS}{'short'}/$test->{OPTS}{'long'}/;
+        $outl = qx($locale $pquery $argl);
         $resl = ($outl =~ /$test->{PTRN}/);
         $resl &= ($outl !~ /$test->{EXCL}/) if (defined $test->{EXCL});
     }
@@ -36,7 +36,7 @@ for my $test (@tests_list) {
     ok($res, $test->{INFO});
     print_fail($pquery, $test->{ARGS}, $out, $test->{PTRN}) if !$res;
     print "#\n" if !$resl;
-    print_fail($pquery, $long, $outl, $test->{PTRN}) if !$resl;
+    print_fail($pquery, $argl, $outl, $test->{PTRN}) if !$resl;
 }
 
 # This function prints failed test info
@@ -51,6 +51,7 @@ sub print_fail($$$$) {
 # Test entry structure:
 # ARGS - args for package-query, PTRN - result to check against, INFO - info on test
 # EXCL (optional) - pattern that the output should not include
+# OPTS (optional) - hash containing short and long forms of the same option
 ## TODO Better test for -Qu (upgrades)?
 sub init_tests() {
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
@@ -67,67 +68,67 @@ sub init_tests() {
         ARGS =>  '-h 2>&1 > /dev/null',
         PTRN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
         INFO =>  'Help info',
-        LONG =>  [ ('-h', '--help') ],
+        OPTS =>  {'short'=>'-h', 'long'=>'--help'},
     };
     push @tests, {
         ARGS =>  '-v',
         PTRN =>  'package-query (\d+\.?)+',
         INFO =>  'Version info',
-        LONG =>  [ ('-v', '--version') ],
+        OPTS =>  {'short'=>'-v', 'long'=>'--version'},
     };
     push @tests, {
         ARGS =>  '-Qn -b /var/lib/pacman',
         PTRN =>  $perl_info_pattern,
         INFO =>  'Database path option (valid path)',
-        LONG =>  [ ('-b', '--dbpath') ],
+        OPTS =>  {'short'=>'-b', 'long'=>'--dbpath'},
     };
     push @tests, {
         ARGS =>  "-Qn -b $dummy_path 2>&1 > /dev/null",
         PTRN =>  $alpm_failed_pattern,
         INFO =>  'Database path option (invalid path)',
-        LONG =>  [ ('-b', '--dbpath') ],
+        OPTS =>  {'short'=>'-b', 'long'=>'--dbpath'},
     };
     push @tests, {
         ARGS =>  '-Qn -c /etc/pacman.conf',
         PTRN =>  $perl_info_pattern,
         INFO =>  'Config file path option (valid path)',
-        LONG =>  [ ('-c', '--config') ],
+        OPTS =>  {'short'=>'-c', 'long'=>'--config'},
     };
     push @tests, {
         ARGS =>  "-Qn -c $dummy_path 2>&1 > /dev/null",
         PTRN =>  'Unable to open file: '.$dummy_path,
         INFO =>  'Config file path option (invalid path)',
-        LONG =>  [ ('-c', '--config') ],
+        OPTS =>  {'short'=>'-c', 'long'=>'--config'},
     };
     push @tests, {
         ARGS =>  '-Qn -r /',
         PTRN =>  $perl_info_pattern,
         INFO =>  'Root path option (valid path)',
-        LONG =>  [ ('-r', '--root') ],
+        OPTS =>  {'short'=>'-r', 'long'=>'--root'},
     };
     push @tests, {
         ARGS =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
         PTRN =>  $alpm_failed_pattern,
         INFO =>  'Root path option (invalid path)',
-        LONG =>  [ ('-r', '--root') ],
+        OPTS =>  {'short'=>'-r', 'long'=>'--root'},
     };
     push @tests, {
         ARGS =>  '-L',
         PTRN =>  'core',
         INFO =>  'Repositories list',
-        LONG =>  [ ('-L', '--list-repo') ],
+        OPTS =>  {'short'=>'-L', 'long'=>'--list-repo'},
     };
     push @tests, {
         ARGS =>  '-Q',
         PTRN =>  $perl_info_pattern,
         INFO =>  'Empty query',
-        LONG =>  [ ('-Q', '--query') ],
+        OPTS =>  {'short'=>'-Q', 'long'=>'--query'},
     };
     push @tests, {
         ARGS =>  '-Q -l',
         PTRN =>  $tests[-1]->{PTRN},
         INFO =>  'List local repositories contents (same as empty query)',
-        LONG =>  [ ('-l', '--list') ],
+        OPTS =>  {'short'=>'-l', 'long'=>'--list'},
     };
     push @tests, {
         ARGS =>  '-Qs perl',
