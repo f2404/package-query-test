@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 61;
+use Test::Simple tests => 58;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -36,7 +36,7 @@ for my $test (@tests_list) {
 
     ok($res, $test->{INFO});
     print_fail($pquery, $test->{COMMAND}, $out, $test->{PATTERN}) if !$res;
-    print "#\n" if (!$resl);
+    print "#\n" if !$resl;
     print_fail($pquery, $long, $outl, $test->{PATTERN}) if !$resl;
 }
 
@@ -115,32 +115,20 @@ sub init_tests() {
     push @tests, {
         COMMAND =>  '-L',
         PATTERN =>  'core',
-        INFO =>     'Repositories list -L',
-    };
-    push @tests, {
-        COMMAND =>  '--list-repo',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Repositories list --list-repo',
+        INFO =>     'Repositories list',
+        LONG =>     [ ('-L', '--list-repo') ],
     };
     push @tests, {
         COMMAND =>  '-Q',
         PATTERN =>  $perl_info_pattern,
-        INFO =>     'Empty query -Q',
+        INFO =>     'Empty query',
+        LONG =>     [ ('-Q', '--query') ],
     };
     push @tests, {
-        COMMAND =>  '--query',
+        COMMAND =>  '-Q -l',
         PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Empty query --query',
-    };
-    push @tests, {
-        COMMAND =>  '-Ql',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'List local repositories contents (same as empty query) -l',
-    };
-    push @tests, {
-        COMMAND =>  '-Q --list',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'List local repositories contents (same as empty query) --list',
+        INFO =>     'List local repositories contents (same as empty query)',
+        LONG =>     [ ('-l', '--list') ],
     };
     push @tests, {
         COMMAND =>  '-Qs perl',
