@@ -21,37 +21,36 @@ use Test::Simple tests => 58;
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
 for my $test (@tests_list) {
-    my $out = qx($locale $pquery $test->{COMMAND});
-    my $res = ($out =~ /$test->{PATTERN}/);
-    $res &= ($out !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
+    my $out = qx($locale $pquery $test->{ARGS});
+    my $res = ($out =~ /$test->{PTRN}/);
+    $res &= ($out !~ /$test->{EXCL}/) if (defined $test->{EXCL});
 
     my ($long, $outl, $resl) = ("", "", 1);
     if (defined $test->{LONG}) {
-        ($long = $test->{COMMAND}) =~ s/$test->{LONG}[0]/$test->{LONG}[1]/;
+        ($long = $test->{ARGS}) =~ s/$test->{LONG}[0]/$test->{LONG}[1]/;
         $outl = qx($locale $pquery $long);
-        $resl = ($outl =~ /$test->{PATTERN}/);
-        $resl &= ($outl !~ /$test->{EXCLUDE}/) if (defined $test->{EXCLUDE});
-        $res &= $resl;
+        $resl = ($outl =~ /$test->{PTRN}/);
+        $resl &= ($outl !~ /$test->{EXCL}/) if (defined $test->{EXCL});
     }
 
     ok($res, $test->{INFO});
-    print_fail($pquery, $test->{COMMAND}, $out, $test->{PATTERN}) if !$res;
+    print_fail($pquery, $test->{ARGS}, $out, $test->{PTRN}) if !$res;
     print "#\n" if !$resl;
-    print_fail($pquery, $long, $outl, $test->{PATTERN}) if !$resl;
+    print_fail($pquery, $long, $outl, $test->{PTRN}) if !$resl;
 }
 
 # This function prints failed test info
 sub print_fail($$$$) {
-    my ($pquery, $command, $out, $pattern) = @_;
-    print "#   command:  $pquery $command\n";
+    my ($pquery, $args, $out, $pattern) = @_;
+    print "#   command:  $pquery $args\n";
     print "#   got:      \"$out\"\n";
     print "#   expected: \"\/$pattern\/\"\n";
 }
 
 # This function intializes the tests list
 # Test entry structure:
-# COMMAND - args for package-query, PATTERN - result to check against, INFO - info on test
-# EXCLUDE (optional) - pattern that the output should not include
+# ARGS - args for package-query, PTRN - result to check against, INFO - info on test
+# EXCL (optional) - pattern that the output should not include
 ## TODO Better test for -Qu (upgrades)?
 sub init_tests() {
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
@@ -65,306 +64,306 @@ sub init_tests() {
     my @tests;
 
     push @tests, {
-        COMMAND =>  '-h 2>&1 > /dev/null',
-        PATTERN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
-        INFO =>     'Help info',
-        LONG =>     [ ('-h', '--help') ],
+        ARGS =>  '-h 2>&1 > /dev/null',
+        PTRN =>  'Usage: package-query \[options\] \[targets \.\.\.\]',
+        INFO =>  'Help info',
+        LONG =>  [ ('-h', '--help') ],
     };
     push @tests, {
-        COMMAND =>  '-v',
-        PATTERN =>  'package-query (\d+\.?)+',
-        INFO =>     'Version info',
-        LONG =>     [ ('-v', '--version') ],
+        ARGS =>  '-v',
+        PTRN =>  'package-query (\d+\.?)+',
+        INFO =>  'Version info',
+        LONG =>  [ ('-v', '--version') ],
     };
     push @tests, {
-        COMMAND =>  '-Qn -b /var/lib/pacman',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Database path option (valid path)',
-        LONG =>     [ ('-b', '--dbpath') ],
+        ARGS =>  '-Qn -b /var/lib/pacman',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Database path option (valid path)',
+        LONG =>  [ ('-b', '--dbpath') ],
     };
     push @tests, {
-        COMMAND =>  "-Qn -b $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  $alpm_failed_pattern,
-        INFO =>     'Database path option (invalid path)',
-        LONG =>     [ ('-b', '--dbpath') ],
+        ARGS =>  "-Qn -b $dummy_path 2>&1 > /dev/null",
+        PTRN =>  $alpm_failed_pattern,
+        INFO =>  'Database path option (invalid path)',
+        LONG =>  [ ('-b', '--dbpath') ],
     };
     push @tests, {
-        COMMAND =>  '-Qn -c /etc/pacman.conf',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Config file path option (valid path)',
-        LONG =>     [ ('-c', '--config') ],
+        ARGS =>  '-Qn -c /etc/pacman.conf',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Config file path option (valid path)',
+        LONG =>  [ ('-c', '--config') ],
     };
     push @tests, {
-        COMMAND =>  "-Qn -c $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  'Unable to open file: '.$dummy_path,
-        INFO =>     'Config file path option (invalid path)',
-        LONG =>     [ ('-c', '--config') ],
+        ARGS =>  "-Qn -c $dummy_path 2>&1 > /dev/null",
+        PTRN =>  'Unable to open file: '.$dummy_path,
+        INFO =>  'Config file path option (invalid path)',
+        LONG =>  [ ('-c', '--config') ],
     };
     push @tests, {
-        COMMAND =>  '-Qn -r /',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Root path option (valid path)',
-        LONG =>     [ ('-r', '--root') ],
+        ARGS =>  '-Qn -r /',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Root path option (valid path)',
+        LONG =>  [ ('-r', '--root') ],
     };
     push @tests, {
-        COMMAND =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
-        PATTERN =>  $alpm_failed_pattern,
-        INFO =>     'Root path option (invalid path)',
-        LONG =>     [ ('-r', '--root') ],
+        ARGS =>  "-Qn -r $dummy_path 2>&1 > /dev/null",
+        PTRN =>  $alpm_failed_pattern,
+        INFO =>  'Root path option (invalid path)',
+        LONG =>  [ ('-r', '--root') ],
     };
     push @tests, {
-        COMMAND =>  '-L',
-        PATTERN =>  'core',
-        INFO =>     'Repositories list',
-        LONG =>     [ ('-L', '--list-repo') ],
+        ARGS =>  '-L',
+        PTRN =>  'core',
+        INFO =>  'Repositories list',
+        LONG =>  [ ('-L', '--list-repo') ],
     };
     push @tests, {
-        COMMAND =>  '-Q',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Empty query',
-        LONG =>     [ ('-Q', '--query') ],
+        ARGS =>  '-Q',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Empty query',
+        LONG =>  [ ('-Q', '--query') ],
     };
     push @tests, {
-        COMMAND =>  '-Q -l',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'List local repositories contents (same as empty query)',
-        LONG =>     [ ('-l', '--list') ],
+        ARGS =>  '-Q -l',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'List local repositories contents (same as empty query)',
+        LONG =>  [ ('-l', '--list') ],
     };
     push @tests, {
-        COMMAND =>  '-Qs perl',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query-search package',
+        ARGS =>  '-Qs perl',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Query-search package',
     };
     push @tests, {
-        COMMAND =>  '-Qi perl',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query - package info -i',
+        ARGS =>  '-Qi perl',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Query - package info -i',
     };
     push @tests, {
-        COMMAND =>  '-Q perl --info',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query - package info --info',
+        ARGS =>  '-Q perl --info',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query - package info --info',
     };
     push @tests, {
-        COMMAND =>  '-1Qi perl',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query - package info -i -1',
+        ARGS =>  '-1Qi perl',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query - package info -i -1',
     };
     push @tests, {
-        COMMAND =>  '-Qi perl --just-one',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query - package info -i --just-one',
+        ARGS =>  '-Qi perl --just-one',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query - package info -i --just-one',
     };
     push @tests, {
-        COMMAND =>  '-Q --show-size perl',
-        PATTERN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\)',
-        INFO =>     'Query - show package size',
+        ARGS =>  '-Q --show-size perl',
+        PTRN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\)',
+        INFO =>  'Query - show package size',
     };
     push @tests, {
-        COMMAND =>  '-Qn',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query native packages -n',
+        ARGS =>  '-Qn',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Query native packages -n',
     };
     push @tests, {
-        COMMAND =>  '-Q --native',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query native packages --native',
+        ARGS =>  '-Q --native',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query native packages --native',
     };
     push @tests, {
-        COMMAND =>  '-Qm',
-        PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query foreign packages -m',
+        ARGS =>  '-Qm',
+        PTRN =>  $local_package_query_pattern,
+        INFO =>  'Query foreign packages -m',
     };
     push @tests, {
-        COMMAND =>  '-Q --foreign',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query foreign packages --foreign',
+        ARGS =>  '-Q --foreign',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query foreign packages --foreign',
     };
     push @tests, {
-        COMMAND =>  '-Qe',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query explicitly installed packages -e',
+        ARGS =>  '-Qe',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Query explicitly installed packages -e',
     };
     push @tests, {
-        COMMAND =>  '-Q --explicit',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query explicitly installed packages --explicit',
+        ARGS =>  '-Q --explicit',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query explicitly installed packages --explicit',
     };
     push @tests, {
-        COMMAND =>  '-Qd',
-        PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query packages installed as dependencies -d',
+        ARGS =>  '-Qd',
+        PTRN =>  $local_package_query_pattern,
+        INFO =>  'Query packages installed as dependencies -d',
     };
     push @tests, {
-        COMMAND =>  '-Q --deps',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query packages installed as dependencies --deps',
+        ARGS =>  '-Q --deps',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query packages installed as dependencies --deps',
     };
     push @tests, {
-        COMMAND =>  '-Qt',
-        PATTERN =>  'local/yaourt(-git)? (\d+\.?)+',
-        INFO =>     'Query packages that are no more required -t',
+        ARGS =>  '-Qt',
+        PTRN =>  'local/yaourt(-git)? (\d+\.?)+',
+        INFO =>  'Query packages that are no more required -t',
     };
     push @tests, {
-        COMMAND =>  '-Q --unrequired',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query packages that are no more required --unrequired',
+        ARGS =>  '-Q --unrequired',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query packages that are no more required --unrequired',
     };
     push @tests, {
-        COMMAND =>  '-Qu',
-        PATTERN =>  $empty,
-        INFO =>     'Query packages upgrades -u',
+        ARGS =>  '-Qu',
+        PTRN =>  $empty,
+        INFO =>  'Query packages upgrades -u',
     };
     push @tests, {
-        COMMAND =>  '-Q --upgrades',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Query packages upgrades --upgrades',
+        ARGS =>  '-Q --upgrades',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Query packages upgrades --upgrades',
     };
     push @tests, {
-        COMMAND =>  '-Qp /var/cache/pacman/pkg/perl-*',
-        PATTERN =>  $perl_info_pattern,
-        INFO =>     'Query package as file',
+        ARGS =>  '-Qp /var/cache/pacman/pkg/perl-*',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Query package as file',
     };
     push @tests, {
-        COMMAND =>  '-Q pacman --qdepends',
-        PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query packages depending on the target',
+        ARGS =>  '-Q pacman --qdepends',
+        PTRN =>  $local_package_query_pattern,
+        INFO =>  'Query packages depending on the target',
     };
     push @tests, {
-        COMMAND =>  '-Q package-query --qprovides',
-        PATTERN =>  $local_package_query_pattern,
-        INFO =>     'Query packages providing the target',
+        ARGS =>  '-Q package-query --qprovides',
+        PTRN =>  $local_package_query_pattern,
+        INFO =>  'Query packages providing the target',
     };
     push @tests, {
-        COMMAND =>  '-Q perl --qrequires',
-        PATTERN =>  'core/db (\d+\.?)+\-\d+',
-        INFO =>     'Query packages requiring the target',
+        ARGS =>  '-Q perl --qrequires',
+        PTRN =>  'core/db (\d+\.?)+\-\d+',
+        INFO =>  'Query packages requiring the target',
     };
     push @tests, {
-        COMMAND =>  '-S kernel26-lts --qconflicts',
-        PATTERN =>  $linux_lts_pattern,
-        INFO =>     'Query packages conflicting with the target',
+        ARGS =>  '-S kernel26-lts --qconflicts',
+        PTRN =>  $linux_lts_pattern,
+        INFO =>  'Query packages conflicting with the target',
     };
     push @tests, {
-        COMMAND =>  '-S kernel26-lts --qreplaces',
-        PATTERN =>  $linux_lts_pattern,
-        INFO =>     'Query packages replacing the target',
+        ARGS =>  '-S kernel26-lts --qreplaces',
+        PTRN =>  $linux_lts_pattern,
+        INFO =>  'Query packages replacing the target',
     };
     push @tests, {
-        COMMAND =>  '-Ss perl',
-        PATTERN =>  $perl_info_pattern.' \[installed\]',
-        INFO =>     'Search in official repositories -S',
+        ARGS =>  '-Ss perl',
+        PTRN =>  $perl_info_pattern.' \[installed\]',
+        INFO =>  'Search in official repositories -S',
     };
     push @tests, {
-        COMMAND =>  '-s perl --sync',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Search in official repositories --sync',
+        ARGS =>  '-s perl --sync',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search in official repositories --sync',
     };
     push @tests, {
-        COMMAND =>  '-S perl --search',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Search in official repositories --search',
+        ARGS =>  '-S perl --search',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search in official repositories --search',
     };
     push @tests, {
-        COMMAND =>  '-Ss perl --nameonly',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        EXCLUDE =>  'core/pcre (\d+\.?)+\-\d+',
-        INFO =>     'Search in official repositories - nameonly option',
+        ARGS =>  '-Ss perl --nameonly',
+        PTRN =>  $tests[-1]->{PTRN},
+        EXCL =>  'core/pcre (\d+\.?)+\-\d+',
+        INFO =>  'Search in official repositories - nameonly option',
     };
     push @tests, {
-        COMMAND =>  '-Ss ^p\[e\]rl$',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Search in official repositories using regexp',
+        ARGS =>  '-Ss ^p\[e\]rl$',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search in official repositories using regexp',
     };
     push @tests, {
-        COMMAND =>  '-Si perl',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Search - package info',
+        ARGS =>  '-Si perl',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search - package info',
     };
     push @tests, {
-        COMMAND =>  '-S --show-size perl',
-        PATTERN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\) \[installed\]',
-        INFO =>     'Search - show package size',
+        ARGS =>  '-S --show-size perl',
+        PTRN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\) \[installed\]',
+        INFO =>  'Search - show package size',
     };
     push @tests, {
-        COMMAND =>  '-As package-query',
-        PATTERN =>  $package_query_pattern,
-        INFO =>     'Search in AUR -A',
+        ARGS =>  '-As package-query',
+        PTRN =>  $package_query_pattern,
+        INFO =>  'Search in AUR -A',
     };
     push @tests, {
-        COMMAND =>  '-s package-query --aur',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Search in AUR --aur',
+        ARGS =>  '-s package-query --aur',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search in AUR --aur',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --insecure',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Search in AUR (insecure connection)',
+        ARGS =>  '-As package-query --insecure',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search in AUR (insecure connection)',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --sort name',
-        PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - sort by name',
+        ARGS =>  '-As package-query --sort name',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - sort by name',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --rsort name',
-        PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - reverse sort by name',
+        ARGS =>  '-As package-query --rsort name',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - reverse sort by name',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --sort date',
-        PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - sort by date',
+        ARGS =>  '-As package-query --sort date',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - sort by date',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --rsort date',
-        PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - reverse sort by date',
+        ARGS =>  '-As package-query --rsort date',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - reverse sort by date',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --sort size',
-        PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - sort by size',
+        ARGS =>  '-As package-query --sort size',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - sort by size',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --rsort size',
-        PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - reverse sort by size',
+        ARGS =>  '-As package-query --rsort size',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - reverse sort by size',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --sort vote',
-        PATTERN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - sort by vote',
+        ARGS =>  '-As package-query --sort vote',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - sort by vote',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --rsort vote',
-        PATTERN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
-        INFO =>     'Search in AUR - reverse sort by vote',
+        ARGS =>  '-As package-query --rsort vote',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - reverse sort by vote',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --aur-url https://aur.archlinux.org',
-        PATTERN =>  $package_query_pattern,
-        INFO =>     'AUR URL option (valid)',
+        ARGS =>  '-As package-query --aur-url https://aur.archlinux.org',
+        PTRN =>  $package_query_pattern,
+        INFO =>  'AUR URL option (valid)',
     };
     push @tests, {
-        COMMAND =>  '-As package-query --aur-url https://dummy 2>&1 > /dev/null',
-        PATTERN =>  'curl error: Couldn\'t resolve host name',
-        INFO =>     'AUR URL option (invalid)',
+        ARGS =>  '-As package-query --aur-url https://dummy 2>&1 > /dev/null',
+        PTRN =>  'curl error: Couldn\'t resolve host name',
+        INFO =>  'AUR URL option (invalid)',
     };
     push @tests, {
-        COMMAND =>  '-Qn -q',
-        PATTERN =>  $empty,
-        INFO =>     'Quiet -q (no output)',
+        ARGS =>  '-Qn -q',
+        PTRN =>  $empty,
+        INFO =>  'Quiet -q (no output)',
     };
     push @tests, {
-        COMMAND =>  '-Qn --quiet',
-        PATTERN =>  $tests[-1]->{PATTERN},
-        INFO =>     'Quiet --quiet (no output)',
+        ARGS =>  '-Qn --quiet',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Quiet --quiet (no output)',
     };
     push @tests, {
-        COMMAND =>  '-j 2>&1 > /dev/null',
-        PATTERN =>  $pquery.': invalid option -- \'j\'',
-        INFO =>     'Invalid option (-j)',
+        ARGS =>  '-j 2>&1 > /dev/null',
+        PTRN =>  $pquery.': invalid option -- \'j\'',
+        INFO =>  'Invalid option (-j)',
     };
 
     return @tests;
