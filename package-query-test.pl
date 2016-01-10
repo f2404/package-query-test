@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 48;
+use Test::Simple tests => 47;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -264,44 +264,52 @@ sub init_tests() {
         INFO =>  'Search in AUR (insecure connection)',
     };
     push @tests, {
-        ARGS =>  '-As package-query --sort name',
+        ARGS =>  '-As package-query --sort n',
         PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - sort by name',
+        OPTS =>  {'short'=>' n', 'long'=>' name'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --rsort name',
+        ARGS =>  '-As package-query --rsort n',
         PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by name',
+        OPTS =>  {'short'=>' n', 'long'=>' name'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --sort date',
+        ARGS =>  '-As package-query --sort 1',
         PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - sort by date',
+        OPTS =>  {'short'=>' 1', 'long'=>' date'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --rsort date',
+        ARGS =>  '-As package-query --rsort 1',
         PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by date',
+        OPTS =>  {'short'=>' 1', 'long'=>' date'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --sort size',
+        ARGS =>  '-As package-query --sort 2',
         PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - sort by size',
+        OPTS =>  {'short'=>' 2', 'long'=>' size'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --rsort size',
+        ARGS =>  '-As package-query --rsort 2',
         PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by size',
+        OPTS =>  {'short'=>' 2', 'long'=>' size'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --sort vote',
+        ARGS =>  '-As package-query --sort w',
         PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - sort by vote',
+        OPTS =>  {'short'=>' w', 'long'=>' vote'},
     };
     push @tests, {
-        ARGS =>  '-As package-query --rsort vote',
+        ARGS =>  '-As package-query --rsort w',
         PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by vote',
+        OPTS =>  {'short'=>' w', 'long'=>' vote'},
     };
     push @tests, {
         ARGS =>  '-As package-query --aur-url https://aur.archlinux.org',
@@ -316,12 +324,8 @@ sub init_tests() {
     push @tests, {
         ARGS =>  '-Qn -q',
         PTRN =>  $empty,
-        INFO =>  'Quiet -q (no output)',
-    };
-    push @tests, {
-        ARGS =>  '-Qn --quiet',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Quiet --quiet (no output)',
+        INFO =>  'Quiet (no output)',
+        OPTS =>  {'short'=>'-q', 'long'=>'--quiet'},
     };
     push @tests, {
         ARGS =>  '-j 2>&1 > /dev/null',
