@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 58;
+use Test::Simple tests => 48;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -136,24 +136,16 @@ sub init_tests() {
         INFO =>  'Query-search package',
     };
     push @tests, {
-        ARGS =>  '-Qi perl',
+        ARGS =>  '-Q -i perl',
         PTRN =>  $perl_info_pattern,
-        INFO =>  'Query - package info -i',
+        INFO =>  'Query - package info',
+        OPTS =>  {'short'=>'-i', 'long'=>'--info'},
     };
     push @tests, {
-        ARGS =>  '-Q perl --info',
+        ARGS =>  '-Qi perl -1',
         PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query - package info --info',
-    };
-    push @tests, {
-        ARGS =>  '-1Qi perl',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query - package info -i -1',
-    };
-    push @tests, {
-        ARGS =>  '-Qi perl --just-one',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query - package info -i --just-one',
+        INFO =>  'Query - package info -1',
+        OPTS =>  {'short'=>'-1', 'long'=>'--just-one'},
     };
     push @tests, {
         ARGS =>  '-Q --show-size perl',
@@ -161,69 +153,46 @@ sub init_tests() {
         INFO =>  'Query - show package size',
     };
     push @tests, {
-        ARGS =>  '-Qn',
+        ARGS =>  '-Q -n',
         PTRN =>  $perl_info_pattern,
-        INFO =>  'Query native packages -n',
+        INFO =>  'Query native packages',
+        OPTS =>  {'short'=>'-n', 'long'=>'--native'},
     };
     push @tests, {
-        ARGS =>  '-Q --native',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query native packages --native',
-    };
-    push @tests, {
-        ARGS =>  '-Qm',
+        ARGS =>  '-Q -m',
         PTRN =>  $local_package_query_pattern,
-        INFO =>  'Query foreign packages -m',
+        INFO =>  'Query foreign packages',
+        OPTS =>  {'short'=>'-m', 'long'=>'--foreign'},
     };
     push @tests, {
-        ARGS =>  '-Q --foreign',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query foreign packages --foreign',
-    };
-    push @tests, {
-        ARGS =>  '-Qe',
+        ARGS =>  '-Q -e',
         PTRN =>  $perl_info_pattern,
-        INFO =>  'Query explicitly installed packages -e',
+        INFO =>  'Query explicitly installed packages',
+        OPTS =>  {'short'=>'-e', 'long'=>'--explicit'},
     };
     push @tests, {
-        ARGS =>  '-Q --explicit',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query explicitly installed packages --explicit',
-    };
-    push @tests, {
-        ARGS =>  '-Qd',
+        ARGS =>  '-Q -d',
         PTRN =>  $local_package_query_pattern,
-        INFO =>  'Query packages installed as dependencies -d',
+        INFO =>  'Query packages installed as dependencies',
+        OPTS =>  {'short'=>'-d', 'long'=>'--deps'},
     };
     push @tests, {
-        ARGS =>  '-Q --deps',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query packages installed as dependencies --deps',
-    };
-    push @tests, {
-        ARGS =>  '-Qt',
+        ARGS =>  '-Q -t',
         PTRN =>  'local/yaourt(-git)? (\d+\.?)+',
-        INFO =>  'Query packages that are no more required -t',
+        INFO =>  'Query packages that are no more required',
+        OPTS =>  {'short'=>'-t', 'long'=>'--unrequired'},
     };
     push @tests, {
-        ARGS =>  '-Q --unrequired',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query packages that are no more required --unrequired',
-    };
-    push @tests, {
-        ARGS =>  '-Qu',
+        ARGS =>  '-Q -u',
         PTRN =>  $empty,
-        INFO =>  'Query packages upgrades -u',
-    };
-    push @tests, {
-        ARGS =>  '-Q --upgrades',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Query packages upgrades --upgrades',
+        INFO =>  'Query packages upgrades',
+        OPTS =>  {'short'=>'-u', 'long'=>'--upgrades'},
     };
     push @tests, {
         ARGS =>  '-Qp /var/cache/pacman/pkg/perl-*',
         PTRN =>  $perl_info_pattern,
         INFO =>  'Query package as file',
+        OPTS =>  {'short'=>'-p', 'long'=>'--file'},
     };
     push @tests, {
         ARGS =>  '-Q pacman --qdepends',
@@ -251,19 +220,16 @@ sub init_tests() {
         INFO =>  'Query packages replacing the target',
     };
     push @tests, {
-        ARGS =>  '-Ss perl',
+        ARGS =>  '-s perl -S',
         PTRN =>  $perl_info_pattern.' \[installed\]',
-        INFO =>  'Search in official repositories -S',
+        INFO =>  'Search in sync repositories (S/sync)',
+        OPTS =>  {'short'=>'-S', 'long'=>'--sync'},
     };
     push @tests, {
-        ARGS =>  '-s perl --sync',
+        ARGS =>  '-S perl -s',
         PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Search in official repositories --sync',
-    };
-    push @tests, {
-        ARGS =>  '-S perl --search',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Search in official repositories --search',
+        INFO =>  'Search in sync repositories (s/search)',
+        OPTS =>  {'short'=>'-s', 'long'=>'--search'},
     };
     push @tests, {
         ARGS =>  '-Ss perl --nameonly',
@@ -287,14 +253,10 @@ sub init_tests() {
         INFO =>  'Search - show package size',
     };
     push @tests, {
-        ARGS =>  '-As package-query',
+        ARGS =>  '-s package-query -A',
         PTRN =>  $package_query_pattern,
-        INFO =>  'Search in AUR -A',
-    };
-    push @tests, {
-        ARGS =>  '-s package-query --aur',
-        PTRN =>  $tests[-1]->{PTRN},
-        INFO =>  'Search in AUR --aur',
+        INFO =>  'Search in AUR',
+        OPTS =>  {'short'=>'-A', 'long'=>'--aur'},
     };
     push @tests, {
         ARGS =>  '-As package-query --insecure',
