@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 47;
+use Test::Simple tests => 49;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -61,6 +61,7 @@ sub init_tests() {
     my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\-\d+( \[installed: \S+\])? \(\d+\)';
     my $linux_lts_pattern = 'core/linux-lts (\d+\.?)+\-\d+';
     my $dummy_path = '/dummy/path';
+    my $pkgbase_target = 'linux-libre-lts';
     my $empty = '^$';
     my @tests;
 
@@ -320,6 +321,16 @@ sub init_tests() {
         ARGS =>  '-As package-query --aur-url https://dummy 2>&1 > /dev/null',
         PTRN =>  'curl error: Couldn\'t resolve host name',
         INFO =>  'AUR URL option (invalid)',
+    };
+    push @tests, {
+        ARGS =>  '-Ai '.$pkgbase_target.' --pkgbase',
+        PTRN =>  'aur/'.$pkgbase_target.' (\d+\.?)+',
+        INFO =>  'AUR package info - pkgbase option (valid)',
+    };
+    push @tests, {
+        ARGS =>  '-Ai '.$pkgbase_target.'-docs --pkgbase',
+        PTRN =>  $empty,
+        INFO =>  'AUR package info - pkgbase option (invalid)',
     };
     push @tests, {
         ARGS =>  '-Qn -q',
