@@ -10,16 +10,17 @@ Usage: ./package-query-test.pl [path to package-query]
 ```
 The script can be run directly - then it will provide the test results one-by-one:
 ```
-ok 1 - Help info (-h)
-ok 2 - Help info (--help)
-ok 3 - Version info
+ok 1 - Help info
+ok 2 - Version info
+ok 3 - Database path option (valid path)
+ok 4 - Database path option (invalid path)
 ...
 ```
-Or, the ```prove``` utility can be used (comes with ```perl```) - it will provide the fancy-formatted result ("All tests successful" in green):
+Or, the ```prove``` utility (it comes with ```perl```) can be used- it will provide the fancy-formatted result ("All tests successful" in green):
 ```
 $ prove ../package-query-test/package-query-test.pl 
 ../package-query-test/package-query-test.pl .. ok     
 All tests successful.
-Files=1, Tests=17,  2 wallclock secs ( 0.03 usr  0.00 sys +  1.99 cusr  0.11 csys =  2.13 CPU)
+Files=1, Tests=49, 19 wallclock secs ( 0.05 usr  0.00 sys + 13.62 cusr  1.11 csys = 14.78 CPU)
 Result: PASS
 ```
