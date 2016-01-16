@@ -52,7 +52,6 @@ sub print_fail($$$$) {
 # ARGS - args for package-query, PTRN - result to check against, INFO - info on test
 # EXCL (optional) - pattern that the output should not include
 # OPTS (optional) - hash containing short and long forms of the same option
-## TODO Better test for -Qu (upgrades)?
 sub init_tests() {
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
     my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
@@ -62,6 +61,7 @@ sub init_tests() {
     my $linux_lts_pattern = 'core/linux-lts (\d+\.?)+\-\d+';
     my $dummy_path = '/dummy/path';
     my $pkgbase_target = 'linux-libre-lts';
+    my $any_package = '\w+/\S+ (\d+\.?)+';
     my $empty = '^$';
     my @tests;
 
@@ -185,7 +185,7 @@ sub init_tests() {
     };
     push @tests, {
         ARGS =>  '-Q -u',
-        PTRN =>  $empty,
+        PTRN =>  "$empty|$any_package",
         INFO =>  'Query packages upgrades',
         OPTS =>  {'short'=>'-u', 'long'=>'--upgrades'},
     };
