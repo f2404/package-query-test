@@ -16,7 +16,7 @@ ok 3 - Database path option (valid path)
 ok 4 - Database path option (invalid path)
 ...
 ```
-Or, the ```prove``` utility (it comes with ```perl```) can be used- it will provide the fancy-formatted result ("All tests successful" in green):
+Or, the ```prove``` utility (it comes with ```perl```) can be used - it will provide the fancy-formatted result ("All tests successful" in green):
 ```
 $ prove ../package-query-test/package-query-test.pl 
 ../package-query-test/package-query-test.pl .. ok     
