@@ -56,7 +56,7 @@ sub init_tests() {
     my $perl_info_pattern = 'core/perl (\d+\.?)+\-\d+ \(base\)';
     my $alpm_failed_pattern = 'failed to initialize alpm library \(could not find or read directory\)';
     my $local_package_query_pattern = 'local/package-query(-git)? (\d+\.?)+';
-    my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])? \(\d+\) \(\d+\.\d+\)';
+    my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])?( \(Out of Date\))? \(\d+\) \(\d+\.\d+\)';
     my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\-\d+( \[installed: \S+\])? \(\d+\) \(\d+\.\d+\)';
     my $linux_lts_pattern = 'core/linux-lts (\d+\.?)+\-\d+';
     my $dummy_path = '/dummy/path';
