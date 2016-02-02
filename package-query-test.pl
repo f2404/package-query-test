@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 49;
+use Test::Simple tests => 51;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -311,6 +311,18 @@ sub init_tests() {
         PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by vote',
         OPTS =>  {'short'=>' w', 'long'=>' vote'},
+    };
+    push @tests, {
+        ARGS =>  '-As package-query --sort p',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - sort by popularity',
+        OPTS =>  {'short'=>' p$', 'long'=>' pop'},
+    };
+    push @tests, {
+        ARGS =>  '-As package-query --rsort p',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        INFO =>  'Search in AUR - reverse sort by popularity',
+        OPTS =>  {'short'=>' p$', 'long'=>' pop'},
     };
     push @tests, {
         ARGS =>  '-As package-query --aur-url https://aur.archlinux.org',
