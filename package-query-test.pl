@@ -302,25 +302,25 @@ sub init_tests() {
     };
     push @tests, {
         ARGS =>  '-As package-query --sort w',
-        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - sort by vote',
         OPTS =>  {'short'=>' w', 'long'=>' vote'},
     };
     push @tests, {
         ARGS =>  '-As package-query --rsort w',
-        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by vote',
         OPTS =>  {'short'=>' w', 'long'=>' vote'},
     };
     push @tests, {
         ARGS =>  '-As package-query --sort p',
-        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
+        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - sort by popularity',
         OPTS =>  {'short'=>' p$', 'long'=>' pop'},
     };
     push @tests, {
         ARGS =>  '-As package-query --rsort p',
-        PTRN =>  $package_query_pattern.'\n    Query ALPM and AUR\n'.$package_query_git_pattern.'\n    Query ALPM and AUR',
+        PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by popularity',
         OPTS =>  {'short'=>' p$', 'long'=>' pop'},
     };
