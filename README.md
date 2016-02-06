@@ -21,6 +21,6 @@ Or, the ```prove``` utility (it comes with ```perl```) can be used - it will pro
 $ prove ../package-query-test/package-query-test.pl 
 ../package-query-test/package-query-test.pl .. ok     
 All tests successful.
-Files=1, Tests=49, 19 wallclock secs ( 0.05 usr  0.00 sys + 13.62 cusr  1.11 csys = 14.78 CPU)
+Files=1, Tests=51, 19 wallclock secs ( 0.05 usr  0.00 sys + 13.62 cusr  1.11 csys = 14.78 CPU)
 Result: PASS
 ```
