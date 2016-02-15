@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 53;
+use Test::Simple tests => 54;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -355,6 +355,12 @@ sub init_tests() {
         ARGS =>  '-Ai '.$pkgbase_target.'-docs --pkgbase',
         PTRN =>  $empty,
         INFO =>  'AUR package info - pkgbase option (invalid)',
+    };
+    push @tests, {
+        ARGS =>  '-Ai package-query -f "%i|%w|%o|%m|%L|%p|%u|%e|%v|%d|%U"',
+        PTRN =>  '\d+\|\d+\|[01]\|\w+\|\d+\|\d+\.\d+\|.*?package-query.*?\|\w+\|\d+(\.\d+)?\-\d+\|Query ALPM and AUR\|https://github\.com/archlinuxfr/package-query/',
+        INFO =>  'AUR package info - formatted',
+        OPTS =>  {'short'=>'-f', 'long'=>'--format'},
     };
     push @tests, {
         ARGS =>  '-Qn -q',
