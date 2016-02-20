@@ -357,8 +357,8 @@ sub init_tests() {
         INFO =>  'AUR package info - pkgbase option (invalid)',
     };
     push @tests, {
-        ARGS =>  '-Ai package-query -f "%i|%w|%o|%m|%L|%p|%u|%e|%v|%d|%U"',
-        PTRN =>  '\d+\|\d+\|[01]\|\w+\|\d+\|\d+\.\d+\|.*?package-query.*?\|\w+\|\d+(\.\d+)?\-\d+\|Query ALPM and AUR\|https://github\.com/archlinuxfr/package-query/',
+        ARGS =>  '-Ai package-query -f "%i|%w|%o|%m|%L|%p|%u|%K|%e|%v|%d|%U"',
+        PTRN =>  '\d+\|\d+\|[01]\|\w+?\|\d+\|\d+\.\d+\|.+?package-query[\.|\w]+?\|[\-|\w+]\|\w+\|\d+(\.\d+)?\-\d+\|Query ALPM and AUR\|https://github\.com/archlinuxfr/package-query/',
         INFO =>  'AUR package info - formatted',
         OPTS =>  {'short'=>'-f', 'long'=>'--format'},
     };
