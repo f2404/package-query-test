@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 54;
+use Test::Simple tests => 55;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -258,6 +258,11 @@ sub init_tests() {
         PTRN =>  $package_query_pattern,
         INFO =>  'Search in AUR',
         OPTS =>  {'short'=>'-A', 'long'=>'--aur'},
+    };
+    push @tests, {
+        ARGS =>  '-As archlinuxfr --maintainer',
+        PTRN =>  $tests[-1]->{PTRN},
+        INFO =>  'Search in AUR by maintainer',
     };
     push @tests, {
         ARGS =>  '-As package-query --insecure',
