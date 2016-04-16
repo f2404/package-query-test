@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 56;
+use Test::Simple tests => 57;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -268,6 +268,12 @@ sub init_tests() {
         ARGS =>  '-As package-query --insecure',
         PTRN =>  $tests[-1]->{PTRN},
         INFO =>  'Search in AUR (insecure connection)',
+    };
+    push @tests, {
+        ARGS =>  '-As yaourt --nameonly',
+        PTRN =>  'aur/yaourt (\d+\.?)+',
+        EXCL =>  'aur/aurtab (\d+\.?)+',
+        INFO =>  'Search in AUR - nameonly option',
     };
     push @tests, {
         ARGS =>  '-As package-query --sort n',
