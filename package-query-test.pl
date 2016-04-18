@@ -58,7 +58,6 @@ sub init_tests() {
     my $local_package_query_pattern = 'local/package-query(-git)? (\d+\.?)+';
     my $package_query_pattern = 'aur/package-query (\d+\.?)+\-\d+( \[installed\: \S+\])?( \(Out of Date\))? \(\d+\) \(\d+\.\d+\)';
     my $package_query_git_pattern = 'aur/package-query-git (\d+\.?)+\.r\d+\.[a-z0-9]{8}\-\d+( \[installed: \S+\])? \(\d+\) \(\d+\.\d+\)';
-    my $linux_lts_pattern = 'core/linux-lts (\d+\.?)+\-\d+';
     my $dummy_path = '/dummy/path';
     my $pkgbase_target = 'linux-libre-lts';
     my $any_package = '\w+/\S+ (\d+\.?)+';
@@ -211,13 +210,13 @@ sub init_tests() {
         INFO =>  'Query packages requiring the target',
     };
     push @tests, {
-        ARGS =>  '-S kernel26-lts --qconflicts',
-        PTRN =>  $linux_lts_pattern,
+        ARGS =>  '-S udev --qconflicts',
+        PTRN =>  'core/systemd (\d+\.?)+\-\d+',
         INFO =>  'Query packages conflicting with the target',
     };
     push @tests, {
-        ARGS =>  '-S kernel26-lts --qreplaces',
-        PTRN =>  $linux_lts_pattern,
+        ARGS =>  '-S udev --qreplaces',
+        PTRN =>  $tests[-1]->{PTRN},
         INFO =>  'Query packages replacing the target',
     };
     push @tests, {
