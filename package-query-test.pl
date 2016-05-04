@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 58;
+use Test::Simple tests => 59;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -341,15 +341,21 @@ sub init_tests() {
         OPTS =>  {'short'=>' r$', 'long'=>' rel'},
     };
     push @tests, {
-        ARGS =>  '-As git 2>&1',
-        PTRN =>  '^AUR error : Too many package results.$',
-        INFO =>  'Search in AUR - too many results',
-    };
-    push @tests, {
         ARGS =>  '-As package-query --rsort r',
         PTRN =>  $package_query_git_pattern.'\n    Query ALPM and AUR\n'.$package_query_pattern.'\n    Query ALPM and AUR',
         INFO =>  'Search in AUR - reverse sort by relevance',
         OPTS =>  {'short'=>' r$', 'long'=>' rel'},
+    };
+    push @tests, {
+        ARGS =>  '-As package-query git 2>&1',
+        PTRN =>  $package_query_git_pattern,
+        INFO =>  'Search in AUR - targets order',
+        OPTS =>  {'short'=>'package-query git', 'long'=>'git package-query'},
+    };
+    push @tests, {
+        ARGS =>  '-As git 2>&1',
+        PTRN =>  '^AUR error : Too many package results.$',
+        INFO =>  'Search in AUR - too many results',
     };
     push @tests, {
         ARGS =>  '-As package-query --aur-url https://aur.archlinux.org',
