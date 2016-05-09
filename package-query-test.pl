@@ -221,7 +221,7 @@ sub init_tests() {
     };
     push @tests, {
         ARGS =>  '-s perl -S',
-        PTRN =>  $perl_info_pattern.' \[installed\]',
+        PTRN =>  $perl_info_pattern.' \[installed',
         INFO =>  'Search in sync repositories (S/sync)',
         OPTS =>  {'short'=>'-S', 'long'=>'--sync'},
     };
@@ -249,7 +249,7 @@ sub init_tests() {
     };
     push @tests, {
         ARGS =>  '-S --show-size perl',
-        PTRN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\) \[installed\]',
+        PTRN =>  'core/perl (\d+\.?)+\-\d+ \[\d+\.\d+ M\] \(base\) \[installed',
         INFO =>  'Search - show package size',
     };
     push @tests, {
