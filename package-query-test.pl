@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 59;
+use Test::Simple tests => 60;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -381,6 +381,12 @@ sub init_tests() {
         ARGS =>  '-Ai package-query -f "%i|%w|%o|%m|%L|%p|%u|%K|%e|%v|%d|%U"',
         PTRN =>  '\d+\|\d+\|[01]\|\w+?\|\d+\|\d+\.\d+\|.+?package-query[\.|\w]+?\|[\-|\w+]\|\w+\|\d+(\.\d+)?\-\d+\|Query ALPM and AUR\|https://github\.com/archlinuxfr/package-query/',
         INFO =>  'AUR package info - formatted',
+        OPTS =>  {'short'=>'-f', 'long'=>'--format'},
+    };
+    push @tests, {
+        ARGS =>  '-Ai yaourt-git -f "%n %a"',
+        PTRN =>  'yaourt-git any',
+        INFO =>  'AUR package info - formatted (arch)',
         OPTS =>  {'short'=>'-f', 'long'=>'--format'},
     };
     push @tests, {
