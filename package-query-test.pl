@@ -166,7 +166,7 @@ sub init_tests() {
     };
     push @tests, {
         ARGS =>  '-Q -e',
-        PTRN =>  $perl_info_pattern,
+        PTRN =>  'local/yaourt(-git)? (\d+\.?)+',
         INFO =>  'Query explicitly installed packages',
         OPTS =>  {'short'=>'-e', 'long'=>'--explicit'},
     };
