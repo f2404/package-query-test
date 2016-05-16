@@ -16,7 +16,7 @@ sub init_tests();
 my @tests_list = init_tests();
 
 # number of tests to run
-use Test::Simple tests => 60;
+use Test::Simple tests => 62;
 
 my $locale = 'LC_ALL=C';
 print "Running tests for $pquery ...\n";
@@ -208,6 +208,18 @@ sub init_tests() {
         ARGS =>  '-Q perl --qrequires',
         PTRN =>  'core/db (\d+\.?)+\-\d+',
         INFO =>  'Query packages requiring the target',
+    };
+    push @tests, {
+        ARGS =>  '-Q -g',
+        PTRN =>  'base',
+        INFO =>  'Query groups',
+        OPTS =>  {'short'=>'-g', 'long'=>'--groups'},
+    };
+    push @tests, {
+        ARGS =>  '-Q -g base',
+        PTRN =>  $perl_info_pattern,
+        INFO =>  'Query base group packages',
+        OPTS =>  {'short'=>'-g', 'long'=>'--groups'},
     };
     push @tests, {
         ARGS =>  '-S udev --qconflicts',
